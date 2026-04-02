@@ -12,7 +12,7 @@ A complete, enterprise-grade automated deployment and lifecycle management syste
 
 ## 🚀 Quick Start
 ```bash
-git clone [https://github.com/YOUR_USERNAME/pi69-monad-mainnet.git](https://github.com/YOUR_USERNAME/pi69-monad-mainnet.git)
+git clone [https://github.com/bozdemir52/pi69-monad-mainnet.git](https://github.com/bozdemir52/pi69-monad-mainnet.git)
 cd pi69-monad-mainnet
 cp .env.example .env
 nano .env # Edit your configurations
@@ -25,7 +25,7 @@ sudo bash install_mainnet.sh
 # Pi69 Monad Mainnet Configuration
 # ==========================================
 
-MONIKER="Pi69-Validator"
+MONIKER="YOUR_VAL_USERNAME"
 
 # --- AUTOMATIC SOFT-RESET URLS (v0.12.1+) ---
 REMOTE_VALIDATORS_URL="https://bucket.monadinfra.com/validators/mainnet/validators.toml"
