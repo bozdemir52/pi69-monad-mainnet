@@ -1,0 +1,15 @@
+[Unit]
+Description=Pi69 Monad Watchdog Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/root/pi69-monad-mainnet/.env
+WorkingDirectory=/root/pi69-monad-mainnet/watchdog
+ExecStart=/usr/bin/python3 monitor.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
