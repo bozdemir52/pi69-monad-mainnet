@@ -17,6 +17,7 @@ cd pi69-monad-mainnet
 cp .env.example .env
 nano .env # Edit your configurations
 sudo bash install_mainnet.sh
+```
 
 **📄 `.env.example`**
 ```ini
@@ -33,3 +34,4 @@ REMOTE_FORKPOINT_URL="https://bucket.monadinfra.com/scripts/mainnet/download-for
 # --- WATCHDOG & ALERTS ---
 TELEGRAM_BOT_TOKEN="your_telegram_bot_token_here"
 TELEGRAM_CHAT_ID="your_telegram_chat_id_here"
+```
