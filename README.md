@@ -19,10 +19,9 @@ nano .env # Edit your configurations
 sudo bash install_mainnet.sh
 ```
 
-**📄 `.env.example`**
 ```ini
 # ==========================================
-# Pi69 Monad Mainnet Configuration
+# Monad Mainnet Configuration
 # ==========================================
 
 MONIKER="YOUR_VAL_USERNAME"
