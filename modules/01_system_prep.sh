@@ -4,7 +4,7 @@ GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 
 echo -e "${YELLOW}📦 Gerekli paketler yükleniyor...${NC}"
 sudo apt update -y
-sudo apt install -y aria2 curl wget jq ufw iptables-persistent python3-pip python3-venv cpupower linux-tools-common linux-tools-generic
+sudo apt install -y aria2 curl wget jq ufw iptables-persistent python3-pip python3-venv linux-tools-common linux-tools-generic
 
 echo -e "${YELLOW}🌐 Python Watchdog bağımlılıkları yükleniyor...${NC}"
 sudo pip3 install requests psutil --break-system-packages || true
