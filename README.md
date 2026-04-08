@@ -203,7 +203,8 @@ REMOTE_FORKPOINT_URL='[https://bucket.monadinfra.com/forkpoint/mainnet/forkpoint
 ```
 /home/monad/monad-bft/config/node.toml Ayarları:
 
-Ini, TOML# Ödül alacak adres
+```Ini, TOML
+# Ödül alacak adres
 beneficiary = "0x0000000000000000000000000000000000000000"
 # Benzersiz node adı
 node_name = "your_node_name"
