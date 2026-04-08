@@ -97,7 +97,10 @@ apt update
 apt install -y monad
 apt-mark hold monad
 ```
-5. Kullanıcı ve Dizin YapısıBash# monad kullanıcısı oluştur
+## 5. Kullanıcı ve Dizin Yapısı
+
+```Bash
+# monad kullanıcısı oluştur
 useradd -m -s /bin/bash monad
 
 # Gerekli dizinleri oluştur
@@ -105,14 +108,26 @@ mkdir -p /home/monad/monad-bft/config \
          /home/monad/monad-bft/ledger \
          /home/monad/monad-bft/config/forkpoint \
          /home/monad/monad-bft/config/validators
-6. CPU Performans OptimizasyonuBash# CPU'yu maksimum performans moduna kilitle
+```
+# 6. CPU Performans Optimizasyonu
+
+```Bash
+# CPU'yu maksimum performans moduna kilitle
 sudo cpupower frequency-set -g performance
 
 # Doğrulama (Governor: "performance" göstermeli)
 cpupower frequency-info | grep "current policy"
-7. TrieDB Disk Yapılandırması⚠️ Uyarı: Yanlış diski formatlamak işletim sisteminizi bozar. Devam etmeden önce hangi diski kullanacağınızı doğrulayın:Bashnvme list
+```
+# 7. TrieDB Disk Yapılandırması
+⚠️ Uyarı: Yanlış diski formatlamak işletim sisteminizi bozar. Devam etmeden önce hangi diski kullanacağınızı doğrulayın:
+
+```Bash
+nvme list
 lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL
-Mount noktası olmayan (/, /boot, swap göstermeyen) diski TrieDB için kullanın.Bash# Disk değişkenini tanımla (KENDİ DİSKİNİZE GÖRE DEĞİŞTİRİN)
+Mount noktası olmayan (/, /boot, swap göstermeyen) diski TrieDB için kullanın.
+
+```Bash
+# Disk değişkenini tanımla (KENDİ DİSKİNİZE GÖRE DEĞİŞTİRİN)
 export TRIEDB_DRIVE=/dev/nvme1n1
 
 # GPT bölüm tablosu oluştur
@@ -128,9 +143,17 @@ udevadm trigger
 udevadm control --reload
 udevadm settle
 ls -l /dev/triedb
-LBA Yapılandırmasını Doğrula:Bashnvme id-ns -H $TRIEDB_DRIVE | grep 'LBA Format' | grep 'in use'
-Beklenen çıktı: Data Size: 512 bytes ... (in use)Eğer 512 byte aktif değilse: nvme format --lbaf=0 $TRIEDB_DRIVETrieDB Bölümünü Formatla:Bashsystemctl start monad-mpt
+
+LBA Yapılandırmasını Doğrula:
+```Bash
+nvme id-ns -H $TRIEDB_DRIVE | grep 'LBA Format' | grep 'in use'
+Beklenen çıktı: Data Size: 512 bytes ... (in use)
+Eğer 512 byte aktif değilse: nvme format --lbaf=0 $TRIEDB_DRIVE
+TrieDB Bölümünü Formatla:
+```Bash
+systemctl start monad-mpt
 journalctl -u monad-mpt -n 14 -o cat
+```
 8. Güvenlik Duvarı (Firewall)⚠️ RaptorCast Uyarısı: Monad ~70.000 PPS UDP trafiği üretir. Sunucu sağlayıcınızın anti-DDoS korumalarını gevşetin.Bash# UFW kuralları
 ufw allow ssh
 ufw allow 8000/tcp
