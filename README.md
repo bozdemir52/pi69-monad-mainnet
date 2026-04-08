@@ -158,7 +158,11 @@ TrieDB Bölümünü Formatla:
 systemctl start monad-mpt
 journalctl -u monad-mpt -n 14 -o cat
 ```
-8. Güvenlik Duvarı (Firewall)⚠️ RaptorCast Uyarısı: Monad ~70.000 PPS UDP trafiği üretir. Sunucu sağlayıcınızın anti-DDoS korumalarını gevşetin.Bash# UFW kuralları
+# 8. Güvenlik Duvarı (Firewall)
+⚠️ RaptorCast Uyarısı: Monad ~70.000 PPS UDP trafiği üretir. Sunucu sağlayıcınızın anti-DDoS korumalarını gevşetin.
+
+```Bash
+# UFW kuralları
 ufw allow ssh
 ufw allow 8000/tcp
 ufw allow 8000/udp
@@ -169,23 +173,45 @@ ufw status
 
 # UDP spam koruması için iptables kuralı
 iptables -I INPUT -p udp --dport 8000 -m length --length 0:1400 -j DROP
-9. OTEL Collector KurulumuMetrikler http://0.0.0.0:8889/metrics adresinden izlenebilir.BashOTEL_VERSION="0.139.0"
+```
+
+# 9. OTEL Collector Kurulumu
+Metrikler http://0.0.0.0:8889/metrics adresinden izlenebilir.
+
+```Bash
+OTEL_VERSION="0.139.0"
 OTEL_PACKAGE="[https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v$](https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v$){OTEL_VERSION}/otelcol_${OTEL_VERSION}_linux_amd64.deb"
 
 curl -fsSL "$OTEL_PACKAGE" -o /tmp/otelcol_linux_amd64.deb
 dpkg -i /tmp/otelcol_linux_amd64.deb
 cp /opt/monad/scripts/otel-config.yaml /etc/otelcol/config.yaml
 systemctl restart otelcol
-10. Node YapılandırmasıBashMF_BUCKET=[https://bucket.monadinfra.com](https://bucket.monadinfra.com)
+```
+
+# 10. Node Yapılandırması
+
+```Bash
+MF_BUCKET=[https://bucket.monadinfra.com](https://bucket.monadinfra.com)
 curl -o /home/monad/.env $MF_BUCKET/config/mainnet/latest/.env.example
 curl -o /home/monad/monad-bft/config/node.toml $MF_BUCKET/config/mainnet/latest/full-node-node.toml
-/home/monad/.env Dosyasına Eklenecekler (Otomatik Kurtarma İçin):BashREMOTE_VALIDATORS_URL='[https://bucket.monadinfra.com/validators/mainnet/validators.toml](https://bucket.monadinfra.com/validators/mainnet/validators.toml)'
+```
+/home/monad/.env Dosyasına Eklenecekler (Otomatik Kurtarma İçin):
+
+```Bash
+REMOTE_VALIDATORS_URL='[https://bucket.monadinfra.com/validators/mainnet/validators.toml](https://bucket.monadinfra.com/validators/mainnet/validators.toml)'
 REMOTE_FORKPOINT_URL='[https://bucket.monadinfra.com/forkpoint/mainnet/forkpoint.toml](https://bucket.monadinfra.com/forkpoint/mainnet/forkpoint.toml)'
-/home/monad/monad-bft/config/node.toml Ayarları:Ini, TOML# Ödül alacak adres
+```
+/home/monad/monad-bft/config/node.toml Ayarları:
+
+Ini, TOML# Ödül alacak adres
 beneficiary = "0x0000000000000000000000000000000000000000"
 # Benzersiz node adı
-node_name = "full_<SAGLAYI_ADI>-1"
-11. Keystore OluşturmaBash# Güçlü bir keystore şifresi oluştur
+node_name = "your_node_name"
+```
+# 11. Keystore Oluşturma
+
+```Bash
+# Güçlü bir keystore şifresi oluştur
 sed -i "s|^KEYSTORE_PASSWORD=$|KEYSTORE_PASSWORD='$(openssl rand -base64 32)'|" /home/monad/.env
 source /home/monad/.env
 mkdir -p /opt/monad/backup/
@@ -196,14 +222,27 @@ monad-keystore create --key-type secp --keystore-path /home/monad/monad-bft/conf
 monad-keystore create --key-type bls --keystore-path /home/monad/monad-bft/config/id-bls --password "${KEYSTORE_PASSWORD}" > /opt/monad/backup/bls-backup
 
 grep "public key" /opt/monad/backup/secp-backup /opt/monad/backup/bls-backup | tee /home/monad/pubkey-secp-bls
-🔐 Kritik: /opt/monad/backup/ içindeki dosyaları node dışında güvenli bir yerde saklayın.12. Node İmza KaydıBashsource /home/monad/.env
+```
+🔐 Kritik: /opt/monad/backup/ içindeki dosyaları node dışında güvenli bir yerde saklayın.
+
+# 12. Node İmza Kaydı
+
+```Bash
+source /home/monad/.env
 monad-sign-name-record \
   --address $(curl -s4 ifconfig.me):8000 \
   --authenticated-udp-port 8001 \
   --keystore-path /home/monad/monad-bft/config/id-secp \
   --password "${KEYSTORE_PASSWORD}" \
   --self-record-seq-num 1
-Çıktıyı node.toml dosyasının [peer_discovery] bölümüne yapıştırın.13. Authenticated UDP Kurulumu⚠️ Monad Foundation'dan bildirim gelene kadar bu adımı uygulamayın.Bash# Port 8001'i güvenlik duvarında aç
+```
+Çıktıyı node.toml dosyasının [peer_discovery] bölümüne yapıştırın.
+
+# 13. Authenticated UDP Kurulumu
+⚠️ Monad Foundation'dan bildirim gelene kadar bu adımı uygulamayın.
+
+```Bash
+# Port 8001'i güvenlik duvarında aç
 sudo ufw allow 8001/udp comment 'monad authenticated udp'
 
 source /home/monad/.env
@@ -213,7 +252,12 @@ monad-sign-name-record \
   --self-record-seq-num 1 \
   --keystore-path /home/monad/monad-bft/config/id-secp \
   --password "$KEYSTORE_PASSWORD"
-14. Servisleri BaşlatmaBash# Dosya izinlerini ayarla
+```
+
+# 14. Servisleri Başlatma
+
+```Bash
+# Dosya izinlerini ayarla
 chown -R monad:monad /home/monad/
 
 # Servisleri etkinleştir
@@ -234,23 +278,61 @@ chown monad:monad $VALIDATORS_FILE
 
 # Servisleri başlat
 systemctl start monad-bft monad-execution monad-rpc
-15. İzleme ve Durum Kontrolümonad-status Kurulumu:Bashcurl -sSL [https://bucket.monadinfra.com/scripts/monad-status.sh](https://bucket.monadinfra.com/scripts/monad-status.sh) -o /usr/local/bin/monad-status
+```
+
+# 15. İzleme ve Durum Kontrolü
+monad-status Kurulumu:
+
+```Bash
+curl -sSL [https://bucket.monadinfra.com/scripts/monad-status.sh](https://bucket.monadinfra.com/scripts/monad-status.sh) -o /usr/local/bin/monad-status
 chmod +x /usr/local/bin/monad-status
 monad-status
-Canlı Loglar:Bashjournalctl -u monad-bft -f
+```
+Canlı Loglar:
+
+```Bash
+journalctl -u monad-bft -f
 journalctl -u monad-execution -f
-BFT Log Analizi (Monlog):Bashusermod -a -G systemd-journal monad
+```
+BFT Log Analizi (Monlog):
+
+```Bash
+usermod -a -G systemd-journal monad
 su - monad
 curl -sSL [https://pub-b0d0d7272c994851b4c8af22a766f571.r2.dev/scripts/monlog](https://pub-b0d0d7272c994851b4c8af22a766f571.r2.dev/scripts/monlog) -O
 chmod u+x ./monlog
 ./monlog
-16. Validator KurulumuFull node tamamen senkronize olduktan sonra validator yapılandırmasına geçilebilir. node.toml içindeki beneficiary ve node_name ayarlarınızı güncelledikten sonra staking precompile üzerinden kayıt yaptırın.17. Node Kurtarma YöntemleriYöntemHızNe Zaman KullanılırSoft ResetHızlıNode ucu ağa yakın, kısa süreli kesintiHard ResetOrtaNode ucu ağdan geride, uzun süreli kesintiSoft Reset (Otomatik – v0.12.1+):Bashsystemctl restart monad-bft monad-execution monad-rpc
-18. Node Migrasyonu (Full Node → Validator)Mevcut full node dosyalarını (node.toml, id-secp, id-bls) yedekleyip validator anahtarlarını taşıyın. İmza üretip yapılandırmayı güncelledikten sonra servisleri yeniden başlatın:Bashsystemctl stop monad-bft monad-rpc monad-execution
+```
+
+# 16. Validator Kurulumu
+Full node tamamen senkronize olduktan sonra validator yapılandırmasına geçilebilir. node.toml içindeki beneficiary ve node_name ayarlarınızı güncelledikten sonra staking precompile üzerinden kayıt yaptırın.
+
+# 17. Node Kurtarma Yöntemleri
+YöntemHızNe Zaman KullanılırSoft ResetHızlıNode ucu ağa yakın, kısa süreli kesintiHard ResetOrtaNode ucu ağdan geride, uzun süreli kesinti
+
+Soft Reset (Otomatik – v0.12.1+):
+
+```Bash
+systemctl restart monad-bft monad-execution monad-rpc
+```
+
+# 18. Node Migrasyonu (Full Node → Validator)
+Mevcut full node dosyalarını (node.toml, id-secp, id-bls) yedekleyip validator anahtarlarını taşıyın. İmza üretip yapılandırmayı güncelledikten sonra servisleri yeniden başlatın:
+
+```Bash
+systemctl stop monad-bft monad-rpc monad-execution
 sleep 1
 systemctl start monad-bft monad-rpc monad-execution
-19. Key Yedekleme ve Geri YüklemeGeri yükleme örneği:Bashmonad-keystore import \
+
+# 19. Key Yedekleme ve Geri Yükleme
+Geri yükleme örneği:
+
+```Bash
+monad-keystore import \
   --ikm "$SECP_IKM" \
   --password "$KEYSTORE_PASSWORD" \
   --keystore-path /home/monad/monad-bft/config/id-secp \
   --key-type secp
-20. Servis ReferansıServisAçıklamamonad-bftKonsensüs istemcisimonad-executionExecution istemcisimonad-rpcRPC sunucusu (port 8080)monad-mptTrieDB disk başlatmamonad-cruftSaatlik temizlik servisiotelcolOTEL metrik toplayıcı
+
+# 20. Servis Referansı
+ServisAçıklamamonad-bftKonsensüs istemcisimonad-executionExecution istemcisimonad-rpcRPC sunucusu (port 8080)monad-mptTrieDB disk başlatmamonad-cruftSaatlik temizlik servisiotelcolOTEL metrik toplayıcı
