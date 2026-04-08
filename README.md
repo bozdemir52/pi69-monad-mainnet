@@ -1,60 +1,63 @@
-# 🚀 Pi69 Monad Mainnet Validator OS
+# Monad Mainnet Validator OS (v2.0)
 
-A complete, enterprise-grade automated deployment and lifecycle management system for Monad Mainnet Validators. Built for maximum uptime, security, and zero-headache operations.
+A comprehensive, enterprise-grade guide and toolkit for deploying Monad Mainnet Full Nodes and Validators on Ubuntu 24.04. This repository follows official Monad HCL requirements and best practices for maximum performance and stability.
 
-## ✨ Features
-- **🩺 Pre-Flight Doctor:** Hardware check against Monad HCL (16+ Cores, NVMe IOPS, Kernel v6.8.0.60+).
-- **🛡️ Network Optimized:** 50,000+ PPS RaptorCast consensus traffic UFW rules.
-- **💾 Storage Tuned:** NVMe Zero-Latency scheduler optimizations for TrieDB.
-- **🤖 Auto-Healing:** Pre-configured with Mainnet `.env` URLs for automatic soft-resets (v0.12.1+).
-- **🧰 Day-2 Operations Toolkit:** Validator Migration, Hard Resets via snapshots, and Key Backups.
-- **🚨 24/7 Watchdog:** Hardware and node status monitoring via Telegram.
+## ✨ Key Highlights
+* **Kernel Optimized:** Designed for v6.8.0.60+ (Fixes critical freeze bugs).
+* **Dual-Disk Architecture:** Separate IO paths for OS/BFT and TrieDB (Non-RAID).
+* **Network Hardened:** 70,000+ PPS UDP optimization for RaptorCast.
+* **Native Monitoring:** Integrated OTEL Collector and Monlog analysis.
+* **Auto-Healing:** v0.12.1+ Soft-Reset and Remote Configuration support.
 
-## 🚀 Quick Start
+---
+
+# Monad Mainnet Node Kurulum Rehberi
+
+Bu rehber, Ubuntu 24.04 üzerinde Monad Mainnet Full Node ve Validator kurulumunu baştan sona kapsamaktadır.
+
+## 📋 İçindekiler
+1. [Sistem Gereksinimleri](#1-sistem-gereksinimleri)
+2. [Kritik Kernel Kontrolü](#2-kritik-kernel-kontrolü)
+3. [Sistem Hazırlığı](#3-sistem-hazırlığı)
+4. [Monad Paket Kurulumu](#4-monad-paket-kurulumu)
+5. [Kullanıcı ve Dizin Yapısı](#5-kullanıcı-ve-dizin-yapısı)
+6. [CPU Performans Optimizasyonu](#6-cpu-performans-optimizasyonu)
+7. [TrieDB Disk Yapılandırması](#7-triedb-disk-yapılandırması)
+8. [Güvenlik Duvarı (Firewall)](#8-güvenlik-duvarı-firewall)
+9. [OTEL Collector Kurulumu](#9-otel-collector-kurulumu)
+10. [Node Yapılandırması](#10-node-yapılandırması)
+11. [Keystore Oluşturma](#11-keystore-oluşturma)
+12. [Node İmza Kaydı](#12-node-imza-kaydı)
+13. [Authenticated UDP Kurulumu](#13-authenticated-udp-kurulumu)
+14. [Servisleri Başlatma](#14-servisleri-başlatma)
+15. [İzleme ve Durum Kontrolü](#15-izleme-ve-durum-kontrolü)
+16. [Validator Kurulumu](#16-validator-kurulumu)
+17. [Node Kurtarma Yöntemleri](#17-node-kurtarma-yöntemleri)
+18. [Node Migrasyonu](#18-node-migrasyonu-full-node--validator)
+19. [Key Yedekleme ve Geri Yükleme](#19-key-yedekleme-ve-geri-yükleme)
+20. [Servis Referansı](#20-servis-referansı)
+
+---
+
+## 1. Sistem Gereksinimleri
+
+| Bileşen | Minimum | Önerilen |
+| :--- | :--- | :--- |
+| **İşletim Sistemi** | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
+| **Kernel** | v6.8.0.60+ (Zorunlu) | v6.8.0.60+ |
+| **CPU** | 16 Çekirdek | 16+ Çekirdek @ 4.5GHz+ |
+| **RAM** | 32 GB | 64–128 GB |
+| **Disk** | 2x 2TB NVMe SSD | 2x 2TB NVMe SSD (RAID'siz) |
+| **Ağ** | 1 Gbps | 1 Gbps+ (70.000 PPS kapasiteli) |
+
+> ⚠️ **Kritik:** İki disk BAĞIMSIZ olmalı, RAID kesinlikle kullanılmamalıdır. Bir disk OS/BFT için, diğeri yalnızca TrieDB için ayrılmalıdır.
+> ⚠️ **HyperThreading (HT) / SMT:** BIOS ayarlarından devre dışı bırakılmalıdır. Bu özellikler node performansını düşürür.
+
+---
+
+## 2. Kritik Kernel Kontrolü
+
+Linux kernel `v6.8.0.56` – `v6.8.0.59` arasında Monad node'unu donduran kritik bir hata mevcuttur. Versiyonunuzu kontrol edin:
+
 ```bash
-git clone [https://github.com/bozdemir52/pi69-monad-mainnet.git](https://github.com/bozdemir52/pi69-monad-mainnet.git)
-cd pi69-monad-mainnet
-cp .env.example .env
-nano .env # Edit your configurations
-sudo bash install_mainnet.sh
-```
-
-```ini
-# ==========================================
-# Monad Mainnet Configuration
-# ==========================================
-
-MONIKER="YOUR_VAL_USERNAME"
-
-# --- AUTOMATIC SOFT-RESET URLS (v0.12.1+) ---
-REMOTE_VALIDATORS_URL="https://bucket.monadinfra.com/validators/mainnet/validators.toml"
-REMOTE_FORKPOINT_URL="https://bucket.monadinfra.com/scripts/mainnet/download-forkpoint.sh"
-
-# --- WATCHDOG & ALERTS ---
-TELEGRAM_BOT_TOKEN="your_telegram_bot_token_here"
-TELEGRAM_CHAT_ID="your_telegram_chat_id_here"
-```
-
-## 🛠 Operational Commands (Management)
-
-After installation, use these commands to manage your validator:
-
-### 📊 Monitoring & Logs
-| Task | Command |
-| :--- | :--- |
-| **View BFT (Consensus) Logs** | `sudo journalctl -u monad-bft -f -o cat` |
-| **View Execution Logs** | `sudo journalctl -u monad-execution -f -o cat` |
-| **Check Services Status** | `sudo systemctl status monad-bft monad-execution monad-rpc` |
-
-### 🔄 Service Management
-| Task | Command |
-| :--- | :--- |
-| **Restart All Services** | `sudo systemctl restart monad-bft monad-execution monad-rpc` |
-| **Soft Reset (Repair)** | `bash tools/soft_reset.sh` |
-
-### 🛠 Tools & Maintenance
-| Task | Command |
-| :--- | :--- |
-| **Backup Keys** | `bash tools/backup_keys.sh` |
-| **Hard Reset (Snapshot)** | `bash tools/hard_reset.sh` |
-| **Migrate Validator** | `bash tools/migrate_validator.sh` |
+uname -r
