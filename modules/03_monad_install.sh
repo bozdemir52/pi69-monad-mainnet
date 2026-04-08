@@ -21,3 +21,26 @@ EOF
 sudo chown monad:monad /home/monad/.env
 sudo chmod 600 /home/monad/.env
 echo -e "${GREEN}✅ Auto-Repair (Soft-Reset) configurations added to .env.${NC}"
+
+# Servis dosyasını oluştur (Anahtarlar olmasa bile servis hazır dursun)
+cat <<EOF | sudo tee /etc/systemd/system/monad.service > /dev/null
+[Unit]
+Description=Monad Node Service
+After=network.target
+
+[Service]
+User=monad
+Group=monad
+WorkingDirectory=/home/monad
+EnvironmentFile=/home/monad/.env
+ExecStart=/usr/bin/monad-node --config /home/monad/monad-bft/config.toml
+Restart=always
+RestartSec=10
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable monad
