@@ -124,6 +124,7 @@ cpupower frequency-info | grep "current policy"
 ```Bash
 nvme list
 lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL
+```
 Mount noktası olmayan (/, /boot, swap göstermeyen) diski TrieDB için kullanın.
 
 ```Bash
@@ -143,10 +144,11 @@ udevadm trigger
 udevadm control --reload
 udevadm settle
 ls -l /dev/triedb
-
+```
 LBA Yapılandırmasını Doğrula:
 ```Bash
 nvme id-ns -H $TRIEDB_DRIVE | grep 'LBA Format' | grep 'in use'
+```
 Beklenen çıktı: Data Size: 512 bytes ... (in use)
 Eğer 512 byte aktif değilse: nvme format --lbaf=0 $TRIEDB_DRIVE
 TrieDB Bölümünü Formatla:
