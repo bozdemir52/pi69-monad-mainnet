@@ -77,7 +77,10 @@ apt update && apt upgrade -y
 # Gerekli araçları kur
 apt install -y curl nvme-cli aria2 jq parted ufw linux-tools-common linux-tools-$(uname -r)
 ```
-4. Monad Paket KurulumuBash# GPG anahtarını ekle
+## 4. Monad Paket Kurulumu
+
+```Bash
+# GPG anahtarını ekle
 curl -fsSL [https://pkg.category.xyz/keys/public-key.asc](https://pkg.category.xyz/keys/public-key.asc) | gpg --dearmor --yes -o /etc/apt/keyrings/category-labs.gpg
 
 # APT deposunu tanımla
@@ -93,6 +96,7 @@ EOF
 apt update
 apt install -y monad
 apt-mark hold monad
+```
 5. Kullanıcı ve Dizin YapısıBash# monad kullanıcısı oluştur
 useradd -m -s /bin/bash monad
 
