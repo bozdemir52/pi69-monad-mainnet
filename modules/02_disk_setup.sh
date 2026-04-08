@@ -2,7 +2,7 @@
 set -e
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 
-echo -e "${YELLOW}💾 NVMe Diskler Monad İçin Optimize Ediliyor...${NC}"
+echo -e "${YELLOW}💾 Optimizing NVMe Drives for Monad...${NC}"
 NVME_DRIVES=$(lsblk -d -o NAME | grep nvme || true)
 
 for DRIVE in $NVME_DRIVES; do
@@ -15,4 +15,4 @@ for DRIVE in $NVME_DRIVES; do
         echo 1023 | sudo tee "$NR_REQUESTS_PATH" > /dev/null 2>&1
     fi
 done
-echo -e "${GREEN}✅ Disk optimizasyonları tamamlandı!${NC}"
+echo -e "${GREEN}✅ Disk optimizations completed!${NC}"
