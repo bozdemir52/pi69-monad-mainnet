@@ -47,6 +47,10 @@ After installation, use these commands to manage your validator:
 | **Watchdog Logs** | `sudo journalctl -u watchdog-mainnet -f -o cat` |
 | **Check Resource Usage** | `htop` |
 
+### 🔧 Auto-Healing (Soft-Reset)
+This script configures the node with **Remote Forkpoint** and **Remote Validators** URLs. 
+If your node falls out of sync or hits a fork, it will automatically attempt to repair itself using official Monad infrastructure.
+
 ### 🔄 Service Management
 | Task | Command |
 | :--- | :--- |
