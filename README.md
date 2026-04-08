@@ -34,3 +34,29 @@ REMOTE_FORKPOINT_URL="https://bucket.monadinfra.com/scripts/mainnet/download-for
 TELEGRAM_BOT_TOKEN="your_telegram_bot_token_here"
 TELEGRAM_CHAT_ID="your_telegram_chat_id_here"
 ```
+
+## 🛠 Operational Commands (Management)
+
+After installation, use these commands to manage your validator:
+
+### 📊 Monitoring & Logs
+| Task | Command |
+| :--- | :--- |
+| **Check Node Status** | `sudo systemctl status monad` |
+| **View Real-time Logs** | `sudo journalctl -u monad -f -o cat` |
+| **Watchdog Logs** | `sudo journalctl -u watchdog-mainnet -f -o cat` |
+| **Check Resource Usage** | `htop` |
+
+### 🔄 Service Management
+| Task | Command |
+| :--- | :--- |
+| **Restart Node** | `sudo systemctl restart monad` |
+| **Stop Node** | `sudo systemctl stop monad` |
+| **Restart Watchdog** | `sudo systemctl restart watchdog-mainnet` |
+
+### 🛠 Tools & Maintenance
+| Task | Command |
+| :--- | :--- |
+| **Backup Keys** | `bash tools/backup_keys.sh` |
+| **Hard Reset (Snapshot)** | `bash tools/hard_reset.sh` |
+| **Migrate Validator** | `bash tools/migrate_validator.sh` |
