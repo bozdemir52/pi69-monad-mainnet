@@ -1,4 +1,4 @@
-Markdown# Monad Mainnet Validator OS (v2.0)
+# Monad Mainnet Validator OS
 
 A comprehensive, enterprise-grade guide and toolkit for deploying Monad Mainnet Full Nodes and Validators on Ubuntu 24.04. This repository follows official Monad HCL requirements and best practices for maximum performance and stability.
 
