@@ -61,17 +61,17 @@ Linux kernel `v6.8.0.56` – `v6.8.0.59` arasında Monad node'unu donduran kriti
 
 ```bash
 uname -r
+```
 Sürümünüz 56, 57, 58 veya 59 ise güncelleme yapıp yeniden başlatın:
 
 ```Bash
 sudo apt update && sudo apt upgrade -y
 sudo reboot
-
-3. Sistem HazırlığıBash# Sistemi güncelle
+## 3. Sistem HazırlığıBash# Sistemi güncelle
 apt update && apt upgrade -y
-
 # Gerekli araçları kur
 apt install -y curl nvme-cli aria2 jq parted ufw linux-tools-common linux-tools-$(uname -r)
+```
 4. Monad Paket KurulumuBash# GPG anahtarını ekle
 curl -fsSL [https://pkg.category.xyz/keys/public-key.asc](https://pkg.category.xyz/keys/public-key.asc) | gpg --dearmor --yes -o /etc/apt/keyrings/category-labs.gpg
 
