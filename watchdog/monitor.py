@@ -13,8 +13,8 @@ def send_alert(message):
         except: pass
 
 def check_system():
-    if psutil.cpu_percent(interval=1) > 90: send_alert("CPU %90'ın üzerinde!")
-    if psutil.disk_usage('/').percent > 85: send_alert("Disk %85 dolu!")
+    if psutil.cpu_percent(interval=1) > 90: send_alert("CPU usage is over 90%!")
+    if psutil.disk_usage('/').percent > 85: send_alert("Disk usage is over 85%!")
 
 while True:
     try:
