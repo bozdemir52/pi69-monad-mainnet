@@ -68,8 +68,12 @@ Sürümünüz 56, 57, 58 veya 59 ise güncelleme yapıp yeniden başlatın:
 sudo apt update && sudo apt upgrade -y
 sudo reboot
 ```
-## 3. Sistem HazırlığıBash# Sistemi güncelle
+## 3. Sistem Hazırlığı
+
+```Bash
+# Sistemi güncelle
 apt update && apt upgrade -y
+
 # Gerekli araçları kur
 apt install -y curl nvme-cli aria2 jq parted ufw linux-tools-common linux-tools-$(uname -r)
 ```
