@@ -42,21 +42,15 @@ After installation, use these commands to manage your validator:
 ### 📊 Monitoring & Logs
 | Task | Command |
 | :--- | :--- |
-| **Check Node Status** | `sudo systemctl status monad` |
-| **View Real-time Logs** | `sudo journalctl -u monad -f -o cat` |
-| **Watchdog Logs** | `sudo journalctl -u watchdog-mainnet -f -o cat` |
-| **Check Resource Usage** | `htop` |
-
-### 🔧 Auto-Healing (Soft-Reset)
-This script configures the node with **Remote Forkpoint** and **Remote Validators** URLs. 
-If your node falls out of sync or hits a fork, it will automatically attempt to repair itself using official Monad infrastructure.
+| **View BFT (Consensus) Logs** | `sudo journalctl -u monad-bft -f -o cat` |
+| **View Execution Logs** | `sudo journalctl -u monad-execution -f -o cat` |
+| **Check Services Status** | `sudo systemctl status monad-bft monad-execution monad-rpc` |
 
 ### 🔄 Service Management
 | Task | Command |
 | :--- | :--- |
-| **Restart Node** | `sudo systemctl restart monad` |
-| **Stop Node** | `sudo systemctl stop monad` |
-| **Restart Watchdog** | `sudo systemctl restart watchdog-mainnet` |
+| **Restart All Services** | `sudo systemctl restart monad-bft monad-execution monad-rpc` |
+| **Soft Reset (Repair)** | `bash tools/soft_reset.sh` |
 
 ### 🛠 Tools & Maintenance
 | Task | Command |
