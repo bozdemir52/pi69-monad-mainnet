@@ -2,12 +2,12 @@
 set -e
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 
-echo -e "${RED}🚨 MONAD HARD RESET ARACI 🚨${NC}"
-read -p "Tüm veritabanı silinecek. Emin misiniz? (y/N): " confirm
+echo -e "${RED}🚨 MONAD HARD RESET TOOL 🚨${NC}"
+read -p "The entire database will be deleted. Are you sure? (y/N): " confirm
 if [[ "$confirm" != [yY] ]]; then exit 0; fi
 
 echo "1) Monad Foundation 2) Category Labs"
-read -p "Snapshot Sağlayıcısı (1/2): " provider_choice
+read -p "Snapshot Provider (1/2): " provider_choice
 
 sudo systemctl stop monad-bft monad-execution monad-rpc
 sudo bash /opt/monad/scripts/reset-workspace.sh
@@ -19,4 +19,4 @@ else
 fi
 
 sudo systemctl start monad-bft monad-execution monad-rpc
-echo -e "${GREEN}✅ Hard Reset Başarılı!${NC}"
+echo -e "${GREEN}✅ Hard Reset Successful!${NC}"
