@@ -67,6 +67,7 @@ Sürümünüz 56, 57, 58 veya 59 ise güncelleme yapıp yeniden başlatın:
 ```Bash
 sudo apt update && sudo apt upgrade -y
 sudo reboot
+```
 ## 3. Sistem HazırlığıBash# Sistemi güncelle
 apt update && apt upgrade -y
 # Gerekli araçları kur
