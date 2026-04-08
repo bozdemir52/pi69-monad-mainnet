@@ -61,8 +61,12 @@ Linux kernel `v6.8.0.56` – `v6.8.0.59` arasında Monad node'unu donduran kriti
 
 ```bash
 uname -r
-Sürümünüz 56, 57, 58 veya 59 ise güncelleme yapıp yeniden başlatın:Bashsudo apt update && sudo apt upgrade -y
+Sürümünüz 56, 57, 58 veya 59 ise güncelleme yapıp yeniden başlatın:
+
+```Bash
+sudo apt update && sudo apt upgrade -y
 sudo reboot
+
 3. Sistem HazırlığıBash# Sistemi güncelle
 apt update && apt upgrade -y
 
