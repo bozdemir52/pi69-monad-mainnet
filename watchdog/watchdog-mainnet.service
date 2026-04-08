@@ -1,5 +1,5 @@
 [Unit]
-Description=Pi69 Monad Watchdog Service
+Description=Monad Mainnet Watchdog Service
 After=network.target
 
 [Service]
