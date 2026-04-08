@@ -11,6 +11,5 @@ sudo pip3 install requests psutil --break-system-packages || true
 
 echo -e "${YELLOW}🔥 Monad RaptorCast için PPS Limitleri Ayarlanıyor...${NC}"
 sudo iptables -A INPUT -p udp -m hashlimit --hashlimit-upto 70000/sec --hashlimit-burst 70000 --hashlimit-mode srcip --hashlimit-name monad_consensus -j ACCEPT
-sudo netfilter-persistent save
 
 echo -e "${GREEN}✅ Sistem bağımlılıkları tamamlandı!${NC}"
