@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pi69 Monad Mainnet Validator Auto-Deploy Script
+# Monad Mainnet Validator Auto-Deploy Script
 set -e
 
 RED='\033[0;31m'
@@ -9,7 +9,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 echo -e "${CYAN}=========================================================${NC}"
-echo -e "${GREEN}🚀 Pi69 Monad Mainnet Validator Kurulumuna Hoş Geldiniz!${NC}"
+echo -e "${GREEN}🚀 Monad Mainnet Validator Kurulumuna Hoş Geldiniz!${NC}"
 echo -e "${CYAN}=========================================================${NC}"
 
 if [ ! -f ".env" ]; then
