@@ -138,17 +138,53 @@ cpupower frequency-info | grep "current policy"
 
 ## 7. TrieDB Disk Configuration
 
-> ⚠️ **WARNING:** Formatting the wrong disk will destroy your operating system. Verify which disk you are targeting before proceeding.
+> ⚠️ CRITICAL WARNING: Formatting the wrong disk will destroy your operating system. Verify which disk you are targeting before proceeding.
 
-```bash
+First, list your NVMe drives and block devices to understand your current disk topology:
+
+```Bash
 sudo nvme list
 lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,MODEL
 ```
+🔍 STEP 7.1: Disk Topology Check (RAID vs. NO RAID)
+Look closely at your lsblk output for your second disk (usually nvme1n1).
 
-Identify the disk with **no mount points** — it should not show `/`, `/boot`, or `swap`. This will be your TrieDB drive.
+SCENARIO A (Ideal - "NO RAID"): If your hosting provider allowed you to install the OS without Software RAID, your second disk (nvme1n1) will have NO partitions (part) and NO mount points under it. It is completely empty. 👉 Skip to STEP 7.2
 
-```bash
-# Define the disk variable (CHANGE THIS TO YOUR ACTUAL DRIVE)
+SCENARIO B (Forced RAID - Mevspace, Hetzner, etc.): If your provider forced a Software RAID installation, you will see md (raid1) devices spanning across both nvme0n1 and nvme1n1. 👉 You MUST do the "Break RAID" step below first!
+
+🆘 How to Fix Forced Software RAID (If Scenario B applies to you):
+Run the following commands to detach the second disk (nvme1n1) from the RAID array and wipe it completely. (Note: Adjust partition numbers p2, p3, p4 if your lsblk output shows different numbers).
+
+```Bash
+# 1. Fail and remove the partitions of the second disk from the RAID array
+sudo mdadm --manage /dev/md0 --fail /dev/nvme1n1p2
+sudo mdadm --manage /dev/md1 --fail /dev/nvme1n1p3
+sudo mdadm --manage /dev/md2 --fail /dev/nvme1n1p4
+
+sudo mdadm --manage /dev/md0 --remove /dev/nvme1n1p2
+sudo mdadm --manage /dev/md1 --remove /dev/nvme1n1p3
+sudo mdadm --manage /dev/md2 --remove /dev/nvme1n1p4
+
+# 2. Wipe RAID superblocks
+sudo mdadm --zero-superblock /dev/nvme1n1p2
+sudo mdadm --zero-superblock /dev/nvme1n1p3
+sudo mdadm --zero-superblock /dev/nvme1n1p4
+
+# 3. Wipe the partition table completely
+sudo wipefs -a /dev/nvme1n1
+sudo sgdisk -Z /dev/nvme1n1
+
+# 4. Update initramfs so the server doesn't hang on the next reboot
+sudo update-initramfs -u
+```
+Verify with lsblk again. Your second disk should now be completely empty. Proceed to Step 7.2.
+
+⚙️ STEP 7.2: Setup the TrieDB Drive
+Now that your second disk is clean and independent, format it and create the necessary symlink.
+
+```Bash
+# Define the disk variable (CHANGE THIS TO YOUR ACTUAL EMPTY DRIVE IF DIFFERENT)
 export TRIEDB_DRIVE=/dev/nvme1n1
 
 # Create a GPT partition table
@@ -166,26 +202,26 @@ sudo udevadm control --reload
 sudo udevadm settle
 ls -l /dev/triedb
 ```
+📏 STEP 7.3: Verify LBA Configuration
+Monad requires the NVMe LBA format to be 512 bytes. Check your current configuration:
 
-### Verify LBA Configuration
-
-```bash
+```Bash
 sudo nvme id-ns -H $TRIEDB_DRIVE | grep 'LBA Format' | grep 'in use'
 ```
+Expected output: Data Size: 512 bytes ... (in use)
 
-Expected output: `Data Size: 512 bytes ... (in use)`
+If 512 bytes is NOT active (e.g., it shows 4096), format it manually:
 
-If 512 bytes is **not** active, format it:
-
-```bash
+```Bash
 sudo nvme format --lbaf=0 $TRIEDB_DRIVE
+
 # Verify again
 sudo nvme id-ns -H $TRIEDB_DRIVE | grep 'LBA Format' | grep 'in use'
 ```
+🚀 STEP 7.4: Initialize TrieDB Partition
+Finally, start the process to initialize the partition.
 
-### Initialize TrieDB Partition
-
-```bash
+```Bash
 sudo systemctl start monad-mpt
 journalctl -u monad-mpt -n 14 -o cat
 ```
