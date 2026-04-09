@@ -482,27 +482,37 @@ A healthy output will confirm all bootstrap peers show `auth_port=8001 ✔` and 
 ## 14. Starting Services
 
 ```bash
-# Set correct file permissions
-sudo chown -R monad:monad /home/monad/
+# 1. Ensure required dependencies are installed (rsync is needed for reset-workspace.sh)
+sudo apt-get update && sudo apt-get install -y rsync
 
-# Enable services to start automatically on boot
+# 2. Ensure /dev/triedb symlink exists and has correct permissions
+sudo udevadm trigger
+sudo udevadm settle
+sudo chmod 666 /dev/triedb
+# Note: If it says "No such file or directory", manually link your drive first! 
+# Example: sudo ln -sf /dev/nvme1n1p1 /dev/triedb
+
+# 3. Enable services to start automatically on boot
 sudo systemctl enable monad-bft monad-execution monad-rpc
 
-# --- Hard Reset (Mandatory on initial setup) ---
+# 4. --- Hard Reset (Mandatory on initial setup) ---
 # Wipes local state and imports the latest network snapshot.
 sudo bash /opt/monad/scripts/reset-workspace.sh
 
-# Download and restore the Mainnet snapshot
+# 5. Download and restore the Mainnet snapshot
 MF_BUCKET=https://bucket.monadinfra.com
 curl -sSL $MF_BUCKET/scripts/mainnet/restore-from-snapshot.sh | sudo bash
 
-# Fetch the latest forkpoint and validator definitions
+# 6. Fetch the latest forkpoint and validator definitions
 VALIDATORS_FILE=/home/monad/monad-bft/config/validators/validators.toml
 curl -sSL $MF_BUCKET/scripts/mainnet/download-forkpoint.sh | sudo bash
-sudo curl $MF_BUCKET/validators/mainnet/validators.toml -o $VALIDATORS_FILE
-sudo chown monad:monad $VALIDATORS_FILE
+sudo curl -sSL $MF_BUCKET/validators/mainnet/validators.toml -o $VALIDATORS_FILE
 
-# Start the node services
+# 7. CRITICAL: Set correct file permissions AFTER snapshot download!
+# Since snapshot was downloaded with sudo, we must assign ownership back to the 'monad' user.
+sudo chown -R monad:monad /home/monad/
+
+# 8. Start the node services
 sudo systemctl start monad-bft monad-execution monad-rpc
 ```
 
